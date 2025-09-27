@@ -1,0 +1,83 @@
+CREATE TABLE StudentEnrollments (
+    enrollment_id INT PRIMARY KEY,
+    student_name VARCHAR(100) NOT NULL,
+    course_id VARCHAR(10) NOT NULL,
+    enrollment_date DATE NOT NULL,
+    UNIQUE KEY unique_enrollment (student_name, course_id)
+);
+
+INSERT INTO StudentEnrollments VALUES 
+    (1, 'Ashish', 'CSE101', '2024-07-01'),
+    (2, 'Smaran', 'CSE102', '2024-07-02'),
+    (3, 'Vaibhav', 'CSE101', '2024-07-01');
+
+SELECT * FROM StudentEnrollments;
+
+START TRANSACTION;
+INSERT INTO StudentEnrollments VALUES (4, 'Priya', 'CSE101', '2024-07-03');
+COMMIT;
+
+START TRANSACTION;
+INSERT INTO StudentEnrollments VALUES (5, 'Ashish', 'CSE101', '2024-07-04');
+ROLLBACK;
+
+SELECT * FROM StudentEnrollments;
+
+START TRANSACTION;
+SELECT * FROM StudentEnrollments 
+WHERE student_name = 'Ashish' AND course_id = 'CSE101' 
+FOR UPDATE;
+
+UPDATE StudentEnrollments 
+SET enrollment_date = '2024-07-05' 
+WHERE student_name = 'Ashish' AND course_id = 'CSE101';
+
+COMMIT;
+
+SELECT * FROM StudentEnrollments WHERE student_name = 'Ashish';
+
+START TRANSACTION;
+SELECT enrollment_id, student_name, course_id, enrollment_date 
+FROM StudentEnrollments 
+WHERE enrollment_id = 1 
+FOR UPDATE;
+
+START TRANSACTION;
+SELECT enrollment_id, student_name, course_id, enrollment_date 
+FROM StudentEnrollments 
+WHERE enrollment_id = 2 
+FOR UPDATE;
+
+UPDATE StudentEnrollments 
+SET enrollment_date = '2024-07-10' 
+WHERE enrollment_id = 1;
+
+COMMIT;
+
+UPDATE StudentEnrollments 
+SET enrollment_date = '2024-07-11' 
+WHERE enrollment_id = 2;
+
+COMMIT;
+
+SELECT * FROM StudentEnrollments ORDER BY enrollment_id;
+
+START TRANSACTION;
+INSERT INTO StudentEnrollments VALUES (6, 'Rohit', 'CSE103', '2024-07-06');
+SELECT * FROM StudentEnrollments WHERE enrollment_id = 6 FOR UPDATE;
+UPDATE StudentEnrollments SET enrollment_date = '2024-07-07' WHERE enrollment_id = 6;
+COMMIT;
+
+START TRANSACTION;
+SELECT * FROM StudentEnrollments WHERE student_name = 'Smaran' FOR UPDATE;
+UPDATE StudentEnrollments SET course_id = 'CSE201' WHERE student_name = 'Smaran';
+COMMIT;
+
+SELECT * FROM StudentEnrollments ORDER BY enrollment_id;
+
+START TRANSACTION;
+SELECT COUNT(*) FROM StudentEnrollments WHERE course_id = 'CSE101' FOR UPDATE;
+INSERT INTO StudentEnrollments VALUES (7, 'Anita', 'CSE101', '2024-07-08');
+COMMIT;
+
+SELECT COUNT(*) as 'Total Enrollments' FROM StudentEnrollments;
