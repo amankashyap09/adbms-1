@@ -1,0 +1,65 @@
+SELECT * FROM FeePayments;
+
+START TRANSACTION;
+
+INSERT INTO FeePayments (payment_id, student_name, amount, payment_date)
+VALUES 
+    (101, 'Ashish', 5000.00, '2024-06-01'),
+    (102, 'Smaran', 4500.00, '2024-06-02'),
+    (103, 'Vaibhav', 5500.00, '2024-06-03');
+
+COMMIT;
+
+SELECT * FROM FeePayments;
+
+START TRANSACTION;
+
+INSERT INTO FeePayments (payment_id, student_name, amount, payment_date)
+VALUES (104, 'Kiran', 3000.00, '2024-06-04');
+
+ROLLBACK;
+
+SELECT * FROM FeePayments WHERE payment_id IN (101, 102, 103, 104);
+
+START TRANSACTION;
+
+INSERT INTO FeePayments (payment_id, student_name, amount, payment_date)
+VALUES (105, 'Ravi', 2500.00, '2024-06-04');
+
+ROLLBACK;
+
+SELECT * FROM FeePayments WHERE payment_id IN (101, 102, 103, 105);
+
+START TRANSACTION;
+    INSERT INTO FeePayments VALUES (107, 'Priya', 4000.00, '2024-06-04');
+    INSERT INTO FeePayments VALUES (108, 'Rohit', 3500.00, '2024-06-05');
+COMMIT;
+
+START TRANSACTION;
+    INSERT INTO FeePayments VALUES (109, 'Anita', 2800.00, '2024-06-06');
+COMMIT;
+
+START TRANSACTION;
+    INSERT INTO FeePayments VALUES (110, 'Isolation_Test', 1500.00, '2024-06-07');
+COMMIT;
+
+SELECT * FROM FeePayments WHERE payment_id >= 101 ORDER BY payment_id;
+
+START TRANSACTION;
+    INSERT INTO FeePayments VALUES (111, 'Savepoint_Test1', 1200.00, '2024-06-08');
+    SAVEPOINT sp1;
+    
+    INSERT INTO FeePayments VALUES (112, 'Savepoint_Test2', 1300.00, '2024-06-09');
+    SAVEPOINT sp2;
+    
+    ROLLBACK TO SAVEPOINT sp1;
+    
+COMMIT;
+
+SELECT * FROM FeePayments WHERE payment_id IN (111, 112);
+
+START TRANSACTION;
+    INSERT INTO FeePayments VALUES (113, 'Final_Test', 2000.00, '2024-06-10');
+COMMIT;
+
+SELECT COUNT(*) as 'Total Records' FROM FeePayments;
